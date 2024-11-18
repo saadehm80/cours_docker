@@ -1,0 +1,79 @@
+version: "3.9"
+
+services:
+
+# datascientest api container
+  datacientest:
+    image: datascientest/fastapi:1.0.0
+    container_name: datascientest_container
+##
+    networks:
+      my_app_network:
+        ipv4_address: 192.168.0.2
+
+#    networks:
+#     - my_app_network
+#    volumes:
+#      - /home/logs:/my_app/my_app_logs/
+    ports:
+      - "8000:8000"
+
+# authentication container		
+  authentication:
+    image: authentication:1.0.0
+    container_name: my_authentication_container
+##
+    networks:
+      my_app_network:
+        ipv4_address: 192.168.0.3
+#    networks:
+#     - my_app_network
+    environment:
+      - LOG=1
+    volumes:
+      - /home/logs/:/my_app/my_app_logs/
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+
+# authorization container
+  authorization:
+    image: authorization:1.0.0
+    container_name: my_authorization_container
+##
+    networks:
+      my_app_network:
+        ipv4_address: 192.168.0.4
+#    networks:
+#     - my_app_network
+    environment:
+      - LOG=0
+    volumes:
+      - /home/logs/:/my_app/my_app_logs/
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+
+# content container
+  content:
+    image: content:1.0.0
+    container_name: my_content_container
+##
+    networks:
+      my_app_network:
+        ipv4_address: 192.168.0.5
+#    networks:
+#     - my_app_network
+    environment:
+      - LOG=1
+    volumes:
+      - /home/logs/:/my_app/my_app_logs/
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+
+# definir un reseau pour l'application
+networks:
+  my_app_network:
+    ipam:
+      driver: default #bridge
+      config:
+        - subnet: 192.168.0.0/16
+          gateway: 192.168.0.1
